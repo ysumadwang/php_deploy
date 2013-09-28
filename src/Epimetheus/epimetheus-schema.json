@@ -1,0 +1,74 @@
+{
+	"title": "Epimetheus Schema",
+	"type": "object",
+	"properties": {
+		"repo": {
+			"type": "string",
+			"required": true
+		},
+		"profile": {
+			"type": "object",
+			"required": true,
+			"patternProperties": {
+				"^[a-zA-Z0-9_-]+$": {
+					"properties": {
+						"address": {
+							"type": "string",
+							"oneOf": [
+								{ "format": "host-name" },
+								{ "format": "ipv4" },
+								{ "format": "ipv6" }
+							]
+						},
+						"login": {
+							"type": "string"
+						},
+						"key": {
+							"type": "object",
+							"properties": {
+								"public": {
+									"type": "string"
+								},
+								"private": {
+									"type": "string"
+								}
+							}
+						},
+						"path": {
+							"type": "string",
+							"pattern": "^(/[^/]+)+$"
+						},
+						"scripts": {
+							"type": "object",
+							"oneOf": [{
+								"$ref": "#/definitions/scripts"
+							}]
+						},
+						"branch": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"additionalProperties": false
+		},
+		"scripts": {
+			"oneOf": [{
+				"$ref": "#/definitions/scripts"
+			}]
+		}
+	},
+	"definitions": {
+		"scripts": {
+			"type": "object",
+			"properties": {
+				"pre-deploy": {
+					"type": "array"
+				},
+				"deploy": {
+					"type": "array"
+				}
+			}
+		}
+	}
+}

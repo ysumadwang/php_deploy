@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Pepper" default="usage">
+	<property name="src.dir"     value="${basedir}/src"/>
+    <property name="build.dir"   value="${basedir}/build"/>
+    <property name="test.dir"   value="${basedir}/tests"/>
+	
+	<condition property="exe.prefix" value=".bat">
+		<os family="windows" />
+	</condition>
+	<condition property="exe.prefix" value="">
+		<not>
+			<os family="windows" />
+		</not>
+	</condition>
+	
+	<target name="usage">
+		<echo>
+=========================================================
+====         Epimetheus - Deploy and forget          ====
+=========================================================
+Targets:
+	build
+	test</echo>
+	</target>
+	
+	<target name="clean" description="Cleanup build artifacts">
+		<delete dir="${build.dir}/api"/>
+		<delete dir="${build.dir}/code-browser"/>
+		<delete dir="${build.dir}/coverage"/>
+		<delete dir="${build.dir}/logs"/>
+		<delete dir="${build.dir}/pdepend"/>
+	</target>
+
+	<target name="prepare" depends="clean" description="Prepare for build">
+		<mkdir dir="${build.dir}/api"/>
+		<mkdir dir="${build.dir}/code-browser"/>
+		<mkdir dir="${build.dir}/coverage"/>
+		<mkdir dir="${build.dir}/logs"/>
+		<mkdir dir="${build.dir}/pdepend"/>
+	</target>
+	
+	<target name="dist" depends="test">
+		<exec executable="box">
+			<arg value="build" />
+			<arg value="-v" />
+		</exec>
+	</target>
+	
+	<target name="lint" description="Perform syntax check of sourcecode files">
+		<apply executable="php" failonerror="true">
+			<arg value="-l" />
+
+			<fileset dir="${src.dir}">
+				<include name="**/*.php" />
+				<modified />
+			</fileset>
+		</apply>
+	</target>
+	
+	<target name="test" depends="lint">
+	</target>
+</project>

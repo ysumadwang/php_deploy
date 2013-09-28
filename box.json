@@ -1,0 +1,12 @@
+{
+	"directories": [
+		"src/",
+		"vendor/"
+	],
+	"files": [
+		"bin/epimetheus"
+	],
+	"main": "bin/epimetheus",
+	"output": "epimetheus.phar",
+	"stub": true
+}

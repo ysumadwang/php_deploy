@@ -1,0 +1,6 @@
+.komodotools
+*.komodoproject
+vendor/
+composer*
+!composer.json
+cache.properties
