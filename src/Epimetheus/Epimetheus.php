@@ -49,7 +49,11 @@ class Epimetheus {
 				$profile = \cli\prompt("Which profile would you like to use?");
 			}
 			
-			$action = new Action\Deploy($this->_config[$profile]);
+			if (empty ($this->_config['profile'][$profile])) {
+				throw new \Exception('To profile');
+			}
+			
+			$action = new Action\Deploy($this->_config['profile'][$profile]);
 		}
 		
 		if (! $action) {

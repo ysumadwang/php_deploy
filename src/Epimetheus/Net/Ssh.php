@@ -8,21 +8,25 @@ class Ssh {
 	protected $_ssh;
 	
 	public function __construct ($host, $port = 22) {
-		$this->_ssh = \ssh2_connect($ost, $port, array(
+		$this->_ssh = \ssh2_connect($host, $port, array(
 			'hostkey'	=> 'ssh-rsa'
 		), array(
 			'disconnect' => function($reason, $message, $language) {
 				\cli\out(sprintf("Server disconnected with code [%d] and message: %s\n", $reason, $message));
 			}
 		));
+		
+		if (! $this->_ssh) {
+			throw new \Exception('Unable to connect to server');
+		}
 	}
 	
 	public function auth($type, $username, $value) {
 		switch($type) {
-			case AUTH_KEY:
+			case self::AUTH_KEY:
 				$ret = \ssh2_auth_pubkey_file($this->_ssh, $username, $value['public'], $value['private'], $value['passphrase']);
 			break;
-			case AUTH_PASSWORD:
+			case self::AUTH_PASSWORD:
 				$ret = \ssh2_auth_password($this->_ssh, $username, $value);
 			break;
 			default:
@@ -31,8 +35,10 @@ class Ssh {
 		}
 		
 		if (! $ret) {
-			throw new \Exception('Authenticated failed');
+			throw new \Exception('Authentication failed');
 		}
+		
+		return true;
 	}
 	
 	public function createDirectory($dir) {
@@ -49,7 +55,7 @@ class Ssh {
 		
 		$exitCode = \intval($this->readStream($this->command('echo $?')));
 		if ($exitCode != 0) {
-			throw new Exception ($this->readStream($stream));
+			throw new \Exception ($this->readStream($stream));
 		}
 		
 		return true;
@@ -59,8 +65,8 @@ class Ssh {
 		\stream_set_blocking($stream, true);
 		$out = '';
 		
-		while (!feof($stream)) {
-			$line .= stream_get_line($stream, 1024, "\n");
+		while (! \feof($stream)) {
+			$line .= \stream_get_line($stream, 1024, "\n");
 		}
 		
 		return $line;

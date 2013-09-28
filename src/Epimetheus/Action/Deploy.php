@@ -11,16 +11,32 @@ class Deploy extends BaseAction {
 		$this->_config = $profile;
 		
 		$this->_ssh = new Ssh($this->_config['address']);
-		$username = $this->_config['login'];
 		
+		$authed = false;
+		do {
+			try {
+				$authed = $this->_authenticate();
+			} catch (\Exception $e) {
+				\cli\err($e->getMessage());
+			}
+			
+			if (! $authed) {
+				if (\cli\choose('Retry') == 'n') {
+					throw new \Exception('Unable to login');
+				}
+			}
+		} while (! $authed);
+	}
+	
+	protected function _authenticate() {
 		if (! empty($this->_config['key'])) {
-			$this->_ssh->auth(Ssh::AUTH_KEY, $username, array(
+			$this->_ssh->auth(Ssh::AUTH_KEY, $this->_config['login'], array(
 				'public'	=> $this->_config['key']['public'],
 				'private'	=> $this->_config['key']['private'],
-				'passphrase'	=> \cli\prompt('Enter passphrase for private key:')
+				'passphrase'	=> \cli\prompt('Enter passphrase for private key')
 			));
 		} else {
-			$this->_ssh->auth(Ssh::AUTH_PASSWORD, $username, \cli\prompt('Password for user: ' . $username));
+			$this->_ssh->auth(Ssh::AUTH_PASSWORD, $this->_config['login'], \cli\prompt('Password for user: ' . $this->_config['login']));
 		}
 	}
 	
