@@ -37,7 +37,8 @@ class Epimetheus {
 			exit;
 		}
 		
-		$this->_config = Configuration::getInstance()->loadConfiguration($this->_cliOptions['config']);
+		$config = $this->_cliOptions['config'] ?: $this->_cliOptions->getOption('config')['default'];
+		$this->_config = Configuration::getInstance()->loadConfiguration($config);
 		
 		$action = null;
 		
