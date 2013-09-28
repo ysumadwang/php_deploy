@@ -51,24 +51,17 @@ class Ssh {
 	}
 	
 	public function command($cmd) {
-		$stream = \ssh2_exec($this->_ssh, $cmd);
-		
-		$exitCode = \intval($this->readStream($this->command('echo $?')));
-		if ($exitCode != 0) {
-			throw new \Exception ($this->readStream($stream));
+		$stdOut = \ssh2_exec($this->_ssh, $cmd);
+
+		$stdErr = ssh2_fetch_stream($stdOut, SSH2_STREAM_STDERR);
+		stream_set_blocking($stdErr, true);
+		stream_set_blocking($stdOut, true);
+		$error = stream_get_contents($stdErr);
+        
+		if ($error !== '') {
+			throw new \Exception($error);
 		}
 		
-		return true;
-	}
-	
-	public function readStream($stream) {
-		\stream_set_blocking($stream, true);
-		$out = '';
-		
-		while (! \feof($stream)) {
-			$line .= \stream_get_line($stream, 1024, "\n");
-		}
-		
-		return $line;
+		return stream_get_contents($stdout);
 	}
 }

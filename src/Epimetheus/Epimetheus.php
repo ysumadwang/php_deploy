@@ -34,7 +34,7 @@ class Epimetheus {
 		
 		if ($this->_cliOptions['help']) {
 			echo $this->_cliOptions->getHelpScreen();
-			exit;
+			return;
 		}
 		
 		$config = $this->_cliOptions['config'] ?: $this->_cliOptions->getOption('config')['default'];
