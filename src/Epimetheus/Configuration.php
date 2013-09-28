@@ -33,7 +33,7 @@ class Configuration implements \ArrayAccess {
 			throw new \Exception("Invalid JSON in configuration file");
 		}
 		
-		$schemaFile = 'file://' . realpath(__DIR__ . DS . 'epimetheus-schema.json');
+		$schemaFile = __DIR__ . DS . 'epimetheus-schema.json';
 		$retriever = new \JsonSchema\Uri\UriRetriever;
 		
 		$schema = $retriever->retrieve($schemaFile);
