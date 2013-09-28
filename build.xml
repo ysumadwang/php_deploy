@@ -58,5 +58,7 @@ Targets:
 	</target>
 	
 	<target name="test" depends="lint">
+		<exec executable="phpunit">
+		</exec>
 	</target>
 </project>
