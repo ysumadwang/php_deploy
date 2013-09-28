@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Pepper" default="usage">
+<project name="Epimetheus" default="usage">
 	<property name="src.dir"     value="${basedir}/src"/>
     <property name="build.dir"   value="${basedir}/build"/>
     <property name="test.dir"   value="${basedir}/tests"/>
@@ -40,7 +40,7 @@ Targets:
 	</target>
 	
 	<target name="dist" depends="test">
-		<exec executable="box">
+		<exec executable="/vendor/kherge/box/bin/box">
 			<arg value="build" />
 			<arg value="-v" />
 		</exec>
