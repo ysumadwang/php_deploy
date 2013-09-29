@@ -76,9 +76,9 @@ class WebHook extends BaseAction {
 			throw new \Exception('Payload is empty');
 		}
 
-		$payload = json_decode($_POST['payload']);
+		$data = json_decode($_POST['payload']);
 
-		if (json_last_error() || $payload === null) {
+		if (json_last_error() || $data === null) {
 			throw new \Exception('Invalid JSON in payload, or no payload at all');
 		}
 
