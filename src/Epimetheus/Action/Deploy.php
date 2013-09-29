@@ -48,7 +48,7 @@ class Deploy extends BaseAction {
 	
 	protected function _runScripts($type, $workingDir = null) {
 		\cli\out('Running ' . $type . ' scripts ... ');
-		$commands = array_merge($this->_config['scripts'][$type], \Epimetheus\Configuration::getInstance()['scripts'][$type]);
+		$commands = array_merge(\Epimetheus\Configuration::getInstance()['scripts'][$type], $this->_config['scripts'][$type]);
 		$exec = $this->_ssh->getExec();
 		
 		foreach ($commands as $command) {
@@ -70,9 +70,9 @@ class Deploy extends BaseAction {
 		$dir = dirname ($this->_config['path']);
 		
 		if (! $exists) {
-			\cli\out("Creating directory ...");
+			\cli\out("Creating directory {$dir} ... ");
 			$sftp->mkdir($dir, 0770, true);
-			\cli\out(" Done\n");
+			\cli\out("Done\n");
 		}
 		
 		$exec = $this->_ssh->getExec();
@@ -80,21 +80,21 @@ class Deploy extends BaseAction {
 		$repo = \Epimetheus\Configuration::getInstance()['repo'];
 		
 		if (! $exists) {
-			\cli\out("Cloning repository ...");
-			$exec->run('git clone git@github.com:' . $repo . '.git ' . $this->_config['path']);
-			\cli\out(" Done\n");
+			\cli\out("Cloning repository to {$this->_config['path']} ...");
+			\cli\out("\n" . $exec->run('git clone git@github.com:' . $repo . '.git ' . $this->_config['path']) . "\n");
+			\cli\out("Done\n");
 		}
 		
 		$exec->run('cd ' . $this->_config['path']);
 		
 		if ($exists) {
-			\cli\out("Pulling from repository ...");
+			\cli\out("Pulling from repository ... ");
 			$exec->run('git pull');
-			\cli\out(" Done\n");
+			\cli\out("Done\n");
 		}
 		
-		\cli\out('Checking out ' . $this->_config['branch'] . ' ...');
+		\cli\out('Checking out ' . $this->_config['branch'] . ' ... ');
 		$exec->run('git checkout ' . $this->_config['branch']);
-		\cli\out(" Done\n");
+		\cli\out("Done\n");
 	}
 }
