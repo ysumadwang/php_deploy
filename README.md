@@ -48,3 +48,37 @@ to deploy the repo to a server. The `profile` is configured in the JSON file.
 	}
 }
 ```
+
+## Deploying a CakePHP plugin
+```json
+{
+	"repo": "davidsteinsland/cakephp-gearman",
+	"profile": {
+		"dev": {
+			"address": "255.255.255.255",
+			"login": "david",
+			"key": {
+				"private": "private.priv",
+				"public": "public.pub"
+			},
+			"path": "/home/david/CakeGearman",
+			"scripts": {
+				"pre-deploy": [
+					"git clone git@github.com:cakephp/cakephp.git cakephp"
+				],
+				"deploy": [
+					"echo \"CakePlugin::load('Gearman', array('bootstrap' => true));\" >> ../cakephp/app/Config/bootstrap.php",
+					"cd .. && cp -R CakeGearman cakephp/app/Plugin/Gearman"
+				]
+			},
+			"branch": "master"
+		}
+	},
+	"scripts": {
+		"pre-deploy": [],
+		"deploy": [
+			"composer install"
+		]
+	}
+}
+```
