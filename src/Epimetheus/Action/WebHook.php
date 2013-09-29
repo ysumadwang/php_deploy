@@ -95,8 +95,15 @@ class WebHook extends BaseAction {
 			}
 		}
 
-		$configuration = \Epimetheus\Configuration::getInstance()
-			->loadConfiguration($this->_path . DIRECTORY_SEPARATOR . '.epimetheus.json');
+		$configuration = array('profile' => array($this->_profile => array()));
+
+		try {
+			$configuration = \Epimetheus\Configuration::getInstance()
+				->loadConfiguration($this->_path . DIRECTORY_SEPARATOR . '.epimetheus.json');
+		} catch (Exception $e) {
+			// swallow exceptions, in case the repo does not contain the epimetheus.json file
+		}
+
 		$profileConfiguration = $configuration['profile'][$this->_profile];
 		$branch = !empty($profileConfiguration['branch']) ? $profileConfiguration['branch'] : basename($data->ref);
 
@@ -117,7 +124,11 @@ class WebHook extends BaseAction {
 	}
 
 	protected function _runScripts($config, $path, $type) {
-		$commands = array_merge(\Epimetheus\Configuration::getInstance()['scripts'][$type], $config['scripts'][$type]);
+		$conf = \Epimetheus\Configuration::getInstance();
+		$globalScripts = !empty($conf['scripts'][$type]) ? $conf['scripts'][$type] : array();
+		$scripts = !empty($config['scripts'][$type]) ? $config['scripts'][$type] : array();
+
+		$commands = array_merge($globalScripts, $scripts);
 
 		foreach ($commands as $command) {
 			if (! $this->_runCommand($command, $path)) {
